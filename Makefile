@@ -1,21 +1,31 @@
 .PHONY: clean
-CC := cmake
-CFLAGS := -Wall
+IDIR := ./include
+SDIR := ./src
+CC := gcc
+CFLAGS := -I$(IDIR)
+
+ODIR := out
+EXEC := bytesized.exe
+LIBS := -lglfw3 -lopengl32 -lgdi32
 
 # Header Files
-HDRS :=
-
-# Source Files
-SRCS := 
+_HDRS := hello.h
+HDRS := $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 # Object files
-OBJS := $(SRCS:.c=.o)
+_OBJS := main.o glad.o
+OBJS := $(patsubst %,$(ODIR)/%,$(_OBJS))
 
-# Executable
-EXEC := main
+# Create object files
+$(ODIR)/%.o: $(SDIR)/%.c $(HDRS)
+	$(CC) -c -o $@ $< $(CFLAGS)
 
+# Link
+$(EXEC): $(OBJS)
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
 all: $(EXEC)
 
+# Windows Specific - Change to rm for UNIX
 clean:
-	rm $(EXEC) $(OBJS)
+	del $(ODIR)\*.o

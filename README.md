@@ -1,3 +1,5 @@
-# byte-sized
+# The Byte-Sized Game Engine
 
-Byte-Sized Game Engine
+## Requirements
+
+GLFW, GLAD, OPENGL
