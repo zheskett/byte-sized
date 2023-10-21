@@ -1,31 +1,58 @@
 .PHONY: clean
-IDIR := ./include
-SDIR := ./src
-CC := gcc
-CFLAGS := -I$(IDIR)
+.PHONY: all
+.PHONY: debug
+.PHONY: final
 
+# Directories
+IDIR := include
+SDIR := src
 ODIR := out
-EXEC := bytesized.exe
+
+# Compiler Settings
+CC := gcc
+CFLAGS = -I$(IDIR) -Wall -Werror
+DEBUG_CFLAGS := -g
+OPTIMIZE_CFLAGS := -O3 -mwindows
+
 LIBS := -lglfw3 -lopengl32 -lgdi32
 
+# Executable name
+EXEC := bytesized.exe
+
 # Header Files
-_HDRS := hello.h
-HDRS := $(patsubst %,$(IDIR)/%,$(_DEPS))
+HDRS := $(wildcard $(IDIR)/*.h)
+
+# Source Files
+SRCS := $(wildcard $(SDIR)/*.c)
 
 # Object files
-_OBJS := main.o glad.o
-OBJS := $(patsubst %,$(ODIR)/%,$(_OBJS))
+OBJS := $(patsubst $(SDIR)/%,$(ODIR)/%,$(patsubst %.c,%.o, $(SRCS)))
 
 # Create object files
 $(ODIR)/%.o: $(SDIR)/%.c $(HDRS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 # Link
 $(EXEC): $(OBJS)
-	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 
 all: $(EXEC)
+
+final: CFLAGS += $(OPTIMIZE_CFLAGS)
+final: clean $(EXEC)
+
+debug: CFLAGS += $(DEBUG_CFLAGS)
+debug: $(EXEC)
+
+print:
+	@echo Headers: $(HDRS)
+	@echo Sources: $(SRCS)
+	@echo Objects: $(OBJS)
+	@echo CFLAGS:  $(CFLAGS)
+	@echo DEBUG:   $(DEBUG_CFLAGS)
+	@echo OPTIMIZ: $(OPTIMIZE_CFLAGS)
 
 # Windows Specific - Change to rm for UNIX
 clean:
 	del $(ODIR)\*.o
+	del $(EXEC)
