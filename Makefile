@@ -10,7 +10,7 @@ ODIR := out
 
 # Compiler Settings
 CC := gcc
-CFLAGS = -I$(IDIR) -Wall -Werror
+CFLAGS = -I$(IDIR) -Wall -Werror --std=c99
 DEBUG_CFLAGS := -g
 OPTIMIZE_CFLAGS := -O3 -mwindows
 
